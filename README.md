@@ -3,3 +3,5 @@ and display a possible arbitrage opportunity on the EUR->BTC->KRW route.
 
 I didn't bother to transpile/polyfill the ES6 script (both syntax and Fetch API).
 It works like it is on most recent Chrome.
+
+Demo: http://lab.graycoding.com/btckrwarb/
