@@ -5,9 +5,22 @@
 <title>EUR/BTC/KRW arbitrage</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { font-family: sans-serif; padding: 0; margin: 1em; text-align: center;}
+body {
+    font-family: sans-serif;
+    padding: 0;
+    margin: 20px;
+    text-align: center;
+    background-color: #222;
+    color: #f7f7f7;
+}
+a:link, a:visited {
+    color: rgb(0, 255, 255);
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
 #content {
-    max-width: 460px;
     margin: 0 auto;
     display: flex;
 }
@@ -34,15 +47,56 @@ body { font-family: sans-serif; padding: 0; margin: 1em; text-align: center;}
 .value {
     font-size: 1.4em;
 }
+.coinmatrix {
+    width: 100%;
+    border-collapse: collapse;
+}
+.coinmatrix td,
+.coinmatrix th {
+    width: 10em;
+    
+    padding: 1em .5em;
+    border: 1px solid #000;
+}
+.coinmatrix .source {
+    font-size: .8em;
+    color: #777;
+}
+.coinmatrix th {
+    font-weight: bold;
+    line-height: 3em;
+}
+.coinmatrix td {
+    vertical-align: top;
+}
+.coinmatrix .compare { 
+    font-size: .8em;
+}
+.coinmatrix .reference {
+    background-color: rgba(0, 255, 0, 0.1);
+}
+.coinmatrix thead th {
+    cursor: pointer;
+}
+.change {
+    color: rgb(150, 150, 150);
+}
+.change.positive {
+    color: rgb(50, 255, 0);
+}
+.change.negative {
+    color: rgb(255, 20, 20);
+}
 </style>
 </head>
 <body>
-    <p>Crypto prices are nearly real-time, EUR/KRW is updated daily.</p>
     <div id="content">
         Fetching data (only works in recent browsers)...
     </div>
-    <p>Page reloads every 60 seconds</p>
-    <p>Crypto data: market aggregates from <a href="http://cryptocompare.com">cryptocompare.com</a><br>EUR/KRW: <a href="http://fixer.io">fixer.io</a></p>
+    <p>Click on a column to change the reference for comparisons.</p>
+    <p>Crypto prices are nearly real-time, fiat prices are updated daily.</p>    
+    <p>Page reloads every 30 seconds</p>
+    <p>Crypto data: <a href="http://cryptocompare.com">cryptocompare.com</a><br>EUR/KRW: <a href="http://fixer.io">fixer.io</a></p>
     <p>Developed by <a href="http://graycoding.com">Paul Grau</a></p>
 </body>
 </html>
