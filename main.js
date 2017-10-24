@@ -142,8 +142,8 @@ const update_store = (data) => {
 
 const calculate_extra_pairs = (store) => {
   /* Calculate some pairs based on other pairs */
-  store['USDKRW'] = {price: Math.round(store['EURKRW'].price / store['EURUSD'].price), source: store['EURUSD'].source};
-  store['ETHBCH'] = {price: Math.round(store['ETHBTC'].price / store['BCHBTC'].price * 10000)/10000, source: store['BCHBTC'].source};
+  store['USDKRW'] = {price: store['EURKRW'].price / store['EURUSD'].price, source: store['EURUSD'].source};
+  store['ETHBCH'] = {price: store['ETHBTC'].price / store['BCHBTC'].price, source: store['BCHBTC'].source};
 }
 
 /*** Rendering, events and update ***/
