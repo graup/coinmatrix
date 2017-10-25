@@ -114,6 +114,7 @@ const build_url = (ds) => {
 };
 
 const marshal = (ds, data) => {
+  // Convert API response into our data format
   let pairs = {};
   if (ds.source == 'cryptocompare') {
     for (let fsym in data.RAW) {
@@ -141,7 +142,7 @@ const update_store = (data) => {
 }
 
 const calculate_extra_pairs = (store) => {
-  /* Calculate some pairs based on other pairs */
+  // Calculate some pairs based on other pairs
   store['USDKRW'] = {price: store['EURKRW'].price / store['EURUSD'].price, source: store['EURUSD'].source};
   store['ETHBCH'] = {price: store['ETHBTC'].price / store['BCHBTC'].price, source: store['BCHBTC'].source};
 }
@@ -152,31 +153,30 @@ const render = () => {
   document.getElementById('content').innerHTML = $template(symbols, store);
 
   [].forEach.call(document.querySelectorAll('.coinmatrix thead th'), function(elem) {
-    elem.addEventListener( 'click', function() {
+    elem.addEventListener('click', function() {
+        // Update reference and re-render
         reference_sym = this.innerHTML;
         render();
-    }, false );
+    }, false);
   });
 }
 
-const update = () => {
+const update = async () => {
   console.log('Updating data');
 
-  let promises = [];
-  for (let data_source of data_sources) {
-    let url = build_url(data_source);
-    promises.push(
-      fetch(url)
+  // Request every data source
+  let promises = data_sources.map(data_source => 
+      fetch(build_url(data_source))
         .then(resp => resp.json())
         .then(data => marshal(data_source, data))
         .then(update_store)
-    );
-  }
+  );
 
-  Promise.all(promises).then(() => {
-    calculate_extra_pairs(store);
-    render();
-  });
+  // Wait for all data sources to load
+  await Promise.all(promises);
+
+  calculate_extra_pairs(store);
+  render();
 };
 
 setInterval(update, 30000); // Update every 30 seconds
