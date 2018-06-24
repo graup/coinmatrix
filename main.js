@@ -108,8 +108,8 @@ const build_url = (ds) => {
     return base_url + data_to_query(params);
   }
   if (ds.source == 'fixer.io') {
-    let base_url = 'http://api.fixer.io/latest?';
-    return base_url + data_to_query({symbols: ds.tsyms.join(','), base: ds.fsyms[0]});
+    let base_url = 'http://data.fixer.io/api/latest?';
+    return base_url + data_to_query({access_key: 'f584acc1cd7b9db96fc3179725f43137', format: 1, symbols: ds.tsyms.join(','), base: ds.fsyms[0]});
   }
 };
 
