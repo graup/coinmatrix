@@ -6,11 +6,13 @@ const $c = (sym, value) => {
   else if (sym == 'BTC' || sym == 'BCH') return value.toFixed(4);
   else return value;
 };
-const $p = (value) => {
+const $p = (value, color=true) => {
   let pct = Math.round(10000*value)/100;
   let cls = '';
-  if (pct >= 0.1) cls = 'positive';
-  if (pct <= -0.1) cls = 'negative'; 
+  if (color) {
+    if (pct >= 0.1) cls = 'positive';
+    if (pct <= -0.1) cls = 'negative';
+  }
   if (pct > 0) return `<span class="change ${cls}">+${pct}%</span>`;
   return `<span class="change ${cls}">${pct}%</span>`;
 }
@@ -34,7 +36,7 @@ const $pair = (fsym, tsym, store) => {
   let cls = '';
   if (reference_sym == tsym) cls = 'reference';
   if (typeof pair === 'undefined') return `<td class="${cls}"></td>`;
-  return `<td class="${cls}">${$c(tsym, pair.price)} ${pair.change? $p(pair.change/100) : ''}<br><span class="source">${pair.source.substr(0,13)}</span><br>${$compare(fsym, tsym, reference_sym, store)}</td>`;
+  return `<td class="${cls}">${$c(tsym, pair.price)} ${pair.change? $p(pair.change/100, false) : ''}<br><span class="source">${pair.source.substr(0,13)}</span><br>${$compare(fsym, tsym, reference_sym, store)}</td>`;
 };
 const $row = (fsym, tsyms, store) => `
   <tr>
@@ -74,13 +76,7 @@ let data_sources = [
   },
   {
     source: 'cryptocompare',
-    fsyms: ['BCH', 'ETH'],
-    tsyms: ['USD', 'EUR', 'BTC'],
-    e: 'Kraken'
-  },
-  {
-    source: 'cryptocompare',
-    fsyms: ['BTC', 'ETH'],
+    fsyms: ['BTC', 'ETH', 'BCH'],
     tsyms: ['EUR', 'USD'],
     e: 'Coinbase'
   },
@@ -144,7 +140,9 @@ const update_store = (data) => {
 const calculate_extra_pairs = (store) => {
   // Calculate some pairs based on other pairs
   store['USDKRW'] = {price: store['EURKRW'].price / store['EURUSD'].price, source: store['EURUSD'].source};
-  store['ETHBCH'] = {price: store['ETHBTC'].price / store['BCHBTC'].price, source: store['BCHBTC'].source};
+  store['ETHBCH'] = {price: store['ETHUSD'].price / store['BCHUSD'].price, source: store['BCHUSD'].source};
+  store['BCHBTC'] = {price: store['BCHUSD'].price / store['BTCUSD'].price, source: store['BTCUSD'].source};
+  store['ETHBTC'] = {price: store['ETHUSD'].price / store['BTCUSD'].price, source: store['BTCUSD'].source};
 }
 
 /*** Rendering, events and update ***/
