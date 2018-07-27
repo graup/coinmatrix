@@ -72,20 +72,36 @@ let data_sources = [
     source: 'cryptocompare',
     fsyms: ['BTC', 'ETH', 'BCH'],
     tsyms: ['KRW'],
-    e: 'Korbit'
+    e: 'Korbit',
+    interval: 30000 // 30s
   },
   {
     source: 'cryptocompare',
     fsyms: ['BTC', 'ETH', 'BCH'],
     tsyms: ['EUR', 'USD'],
-    e: 'Coinbase'
+    e: 'Coinbase',
+    interval: 30000 // 30s
   },
   {
     source: 'fixer.io',
     fsyms: ['EUR'],
     tsyms: ['EUR', 'KRW', 'USD'],
+    interval: 12*60*60*1000 // 12h
   }
 ];
+
+// Use cached data when API requests exhausted
+const fixer_cache = {
+  "success": true,
+  "timestamp": 1532697307,
+  "base": "EUR",
+  "date": "2018-07-27",
+  "rates": {
+    "EUR": 1,
+    "KRW": 1298.68425,
+    "USD": 1.164959
+  }
+}
 
 let reference_sym = 'KRW';
 
@@ -159,24 +175,46 @@ const render = () => {
   });
 }
 
-const update = async () => {
-  console.log('Updating data');
+const fetchSource = (data_source) => {
+  console.log('Updating', data_source.source, data_source.e || "");
+  if (data_source.source == 'fixer.io') {
+    console.log(`Using cached data from ${fixer_cache.date} for fixer.io`);
+    update_store(marshal(data_source, fixer_cache));
+    return;
+  }
+  return fetch(build_url(data_source))
+    .then(resp => resp.json())
+    .then(data => marshal(data_source, data))
+    .then(update_store);
+};
 
+const updateUI = () => {
+  console.log('Updating UI');
+  calculate_extra_pairs(store);
+  render();
+}
+
+const update = async () => {
+  const promises = [];
   // Request every data source
-  let promises = data_sources.map(data_source => 
-      fetch(build_url(data_source))
-        .then(resp => resp.json())
-        .then(data => marshal(data_source, data))
-        .then(update_store)
-  );
+  for (let data_source of data_sources) {
+    promises.push(fetchSource(data_source));
+
+    // Reload after set interval
+    setInterval(() => {
+      fetchSource(data_source);
+    }, data_source.interval);
+  }
 
   // Wait for all data sources to load
   await Promise.all(promises);
 
-  calculate_extra_pairs(store);
-  render();
+  // Update UI after initial load
+  updateUI();
+
+  // Update UI at a minimum interval
+  setInterval(updateUI, 15000);
 };
 
-setInterval(update, 30000); // Update every 30 seconds
 update();
 
