@@ -63,23 +63,23 @@ const $template = (symbols, store) => `
 let store = {};
 
 let symbols = [ // good to put them in order of absolute numerical value
-  'ETH', 'BCH', 'BTC', 
+  'ETH', 'BTC',
   'EUR', 'USD', 'KRW'
 ];
 
 let data_sources = [
   {
     source: 'cryptocompare',
-    fsyms: ['BTC', 'ETH', 'BCH'],
+    fsyms: ['BTC', 'ETH'],
     tsyms: ['KRW'],
-    e: 'Korbit',
+    e: 'Bithumb',
     interval: 30000 // 30s
   },
   {
     source: 'cryptocompare',
-    fsyms: ['BTC', 'ETH', 'BCH'],
-    tsyms: ['EUR', 'USD'],
-    e: 'Coinbase',
+    fsyms: ['BTC', 'ETH'],
+    tsyms: ['EUR', 'USD', 'BTC'],
+    e: 'Kraken',
     interval: 30000 // 30s
   },
   {
@@ -93,15 +93,15 @@ let data_sources = [
 // Use cached data when API requests exhausted
 const fixer_cache = {
   "success": true,
-  "timestamp": 1532697307,
+  "timestamp": 1610872085,
   "base": "EUR",
-  "date": "2018-07-27",
+  "date": "2021-01-17",
   "rates": {
     "EUR": 1,
-    "KRW": 1298.68425,
-    "USD": 1.164959
+    "KRW": 1333.89131,
+    "USD": 1.20795
   }
-}
+};
 
 let reference_sym = 'KRW';
 
@@ -131,9 +131,8 @@ const marshal = (ds, data) => {
   if (ds.source == 'cryptocompare') {
     for (let fsym in data.RAW) {
       for (let tsym in data.RAW[fsym]) {
-        let price = data.RAW[fsym][tsym].PRICE;
         pairs[fsym + tsym] = {
-          price: price,
+          price: data.RAW[fsym][tsym].PRICE,
           source: data.DISPLAY[fsym][tsym].MARKET,
           change: data.DISPLAY[fsym][tsym].CHANGEPCT24HOUR,
           volume: data.DISPLAY[fsym][tsym].VOLUME24HOURTO,
@@ -156,9 +155,6 @@ const update_store = (data) => {
 const calculate_extra_pairs = (store) => {
   // Calculate some pairs based on other pairs
   store['USDKRW'] = {price: store['EURKRW'].price / store['EURUSD'].price, source: store['EURUSD'].source};
-  store['ETHBCH'] = {price: store['ETHUSD'].price / store['BCHUSD'].price, source: store['BCHUSD'].source};
-  store['BCHBTC'] = {price: store['BCHUSD'].price / store['BTCUSD'].price, source: store['BTCUSD'].source};
-  store['ETHBTC'] = {price: store['ETHUSD'].price / store['BTCUSD'].price, source: store['BTCUSD'].source};
 }
 
 /*** Rendering, events and update ***/
@@ -177,11 +173,11 @@ const render = () => {
 
 const fetchSource = (data_source) => {
   console.log('Updating', data_source.source, data_source.e || "");
-  if (data_source.source == 'fixer.io') {
+  /*if (data_source.source == 'fixer.io') {
     console.log(`Using cached data from ${fixer_cache.date} for fixer.io`);
     update_store(marshal(data_source, fixer_cache));
     return;
-  }
+  }*/
   return fetch(build_url(data_source))
     .then(resp => resp.json())
     .then(data => marshal(data_source, data))
@@ -189,7 +185,6 @@ const fetchSource = (data_source) => {
 };
 
 const updateUI = () => {
-  console.log('Updating UI');
   calculate_extra_pairs(store);
   render();
 }
