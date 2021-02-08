@@ -53,9 +53,9 @@ const $template = (symbols, store) => `
   <table class="coinmatrix">
     <thead><tr>
       <th>&nbsp;</th>
-      ${symbols.slice(1).map(symbol => $th(symbol)).join('')}
+      ${symbols.slice(2).map(symbol => $th(symbol)).join('')}
     </tr></thead>
-    ${symbols.slice(0, -1).map(symbol => $row(symbol, symbols.slice(1), store)).join('')}
+    ${symbols.slice(0, -1).map(symbol => $row(symbol, symbols.slice(2), store)).join('')}
   </table>
 `; 
 
@@ -63,21 +63,21 @@ const $template = (symbols, store) => `
 let store = {};
 
 let symbols = [ // good to put them in order of absolute numerical value
-  'ETH', 'BTC',
+  'XRP', 'ETH', 'BTC', 
   'EUR', 'USD', 'KRW'
 ];
 
 let data_sources = [
   {
     source: 'cryptocompare',
-    fsyms: ['BTC', 'ETH'],
+    fsyms: ['BTC', 'ETH', 'XRP'],
     tsyms: ['KRW'],
     e: 'Bithumb',
     interval: 30000 // 30s
   },
   {
     source: 'cryptocompare',
-    fsyms: ['BTC', 'ETH'],
+    fsyms: ['BTC', 'ETH', 'XRP'],
     tsyms: ['EUR', 'USD', 'BTC'],
     e: 'Kraken',
     interval: 30000 // 30s
